@@ -4,6 +4,7 @@ import TrainEnglish.Vocabulary;
 import TrainEnglish.Trainable;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class FileVocabulary implements Vocabulary, Trainable {
 
@@ -44,6 +45,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 System.out.println(line);
                 line = fileReader.readLine();
             }
+            fileReader.close();
         } catch (IOException exe) {
             System.out.println("Error: " + exe.getMessage());
         }
@@ -57,6 +59,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
             while (line != null) {
                 if (line.split(" - ")[0].equals(word) ||
                         line.split(" - ")[1].equals(word)) {
+                    fileReader.close();
                     return line;
                 } else {
                     line = fileReader.readLine();
@@ -90,11 +93,9 @@ public class FileVocabulary implements Vocabulary, Trainable {
             }
             pw.close();
             br.close();
-
             if (!filePath.delete()) {
                 System.out.println("Could not delete file");
             }
-
             if (!tempFile.renameTo(filePath)) {
                 System.out.println("Could not rename file");
             } else {
@@ -114,6 +115,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
             int count = 1;
             while (line != null) {
                 if (count == index) {
+                    fileReader.close();
                     return line;
                 } else {
                     line = fileReader.readLine();
@@ -124,6 +126,74 @@ public class FileVocabulary implements Vocabulary, Trainable {
             System.out.println("Error: " + exe.getMessage());
         }
         return "Not such word from index " + index;
+    }
+
+   public static void startWorkWithFile() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter a file path");
+        String input = sc.nextLine();
+        FileVocabulary file = new FileVocabulary();
+        while (!file.setFilePath(input)) {
+            input = sc.nextLine();
+        }
+        System.out.println("\nCommands:\n Write into file \n Show words \n Find by index \n Find by word \n Delete word");
+        while (true) {
+            System.out.println();
+            input = sc.nextLine();
+            if (input.equals("End")) {
+                sc.close();
+                break;
+            }
+            if (input.equals("Wif")) {
+                String[] word = new String[2];
+                String wordInput = "";
+                System.out.println("Enter a word (Example Пример)");
+                while (true) {
+                    try {
+                        wordInput = sc.nextLine();
+                        if (wordInput.equals("Stop")) break;
+                        file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
+                    } catch (Exception exe) {
+                        System.out.println("Enter 2 words in line");
+                    }
+                }
+            } else if (input.equals("Sw")) {
+                System.out.println();
+                file.showWords();
+            } else if (input.equals("Dw")) {
+                String garbage = "";
+                System.out.println("Word to delete: ");
+                while (!garbage.equals("Stop")) {
+                    garbage = sc.nextLine();
+                    if (!file.deleteWord(garbage) && !garbage.equals("Stop")) {
+                        System.out.println("No such word");
+                    }
+
+                }
+            } else if (input.equals("Fbw")) {
+                String search = "";
+                System.out.println("Word to find:");
+                while (true) {
+                    search = sc.nextLine();
+                    if (search.equals("Stop")) break;
+                    System.out.println(file.findWord(search));
+                }
+            } else if (input.equals("Fbi")) {
+                String search = "";
+                while (true) {
+                    search = sc.nextLine();
+                    if (search.toString().equals("Stop")) break;
+                    try {
+                        System.out.println(file.findWordFromIndex(Integer.parseInt(search)));
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Not a number");
+                    }
+                }
+            }
+            else {
+                System.out.println("No such command");
+            }
+        }
     }
 }
 
