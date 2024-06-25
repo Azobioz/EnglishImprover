@@ -4,6 +4,9 @@ import TrainEnglish.Vocabulary;
 import TrainEnglish.Trainable;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class FileVocabulary implements Vocabulary, Trainable {
@@ -110,6 +113,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
 
     public String findWordFromIndex(int index) {
         try {
+
             BufferedReader fileReader = new BufferedReader(new FileReader(getFilePath()));
             String line = fileReader.readLine();
             int count = 1;
@@ -127,6 +131,43 @@ public class FileVocabulary implements Vocabulary, Trainable {
         }
         return "Not such word from index " + index;
     }
+
+    public void training() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            Random rnd = new Random();
+            BufferedReader fileReader = new BufferedReader(new FileReader(getFilePath()));
+            List<String> wordStorage = new ArrayList<String>();
+            String line = fileReader.readLine();
+
+            while(line != null) {
+                wordStorage.add(line);
+                line = fileReader.readLine();
+            }
+
+            for (int i = rnd.nextInt(wordStorage.size() - 1); !wordStorage.isEmpty();) {
+                System.out.print(wordStorage.get(i).split(" - ")[0] + " - " );
+                String wordInput = scanner.nextLine();
+                if(wordInput.equals(wordStorage.get(i).split(" - ")[1])) {
+                    System.out.println("Correct!");
+                    wordStorage.remove(i);
+                }
+                else if (wordInput.equals("End")) {
+                    break;
+                }
+                else {
+                    System.out.println("Wrong!");
+                    i = rnd.nextInt(wordStorage.size() - 1);
+                }
+            }
+
+        }
+        catch (IOException exe) {
+            System.out.println("Error: IOException");
+        }
+    }
+
+    //static void startTrain
 
    public static void startWorkWithFile() {
         Scanner sc = new Scanner(System.in);
