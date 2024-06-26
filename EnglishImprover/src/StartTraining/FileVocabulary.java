@@ -132,11 +132,11 @@ public class FileVocabulary implements Vocabulary, Trainable {
         return "Not such word from index " + index;
     }
 
-    public void training() {
+    public void training(String filePath) {
         try {
             Scanner scanner = new Scanner(System.in);
             Random rnd = new Random();
-            BufferedReader fileReader = new BufferedReader(new FileReader(getFilePath()));
+            BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
             List<String> wordStorage = new ArrayList<String>();
             String line = fileReader.readLine();
 
@@ -145,7 +145,14 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 line = fileReader.readLine();
             }
 
-            for (int i = rnd.nextInt(wordStorage.size() - 1); !wordStorage.isEmpty();) {
+            while (!wordStorage.isEmpty()) {
+                int i = -1;
+                try {
+                     i = rnd.nextInt(wordStorage.size()) - 1;
+                }
+                catch (Exception exe) {
+                    i = 0;
+                }
                 System.out.print(wordStorage.get(i).split(" - ")[0] + " - " );
                 String wordInput = scanner.nextLine();
                 if(wordInput.equals(wordStorage.get(i).split(" - ")[1])) {
@@ -157,7 +164,6 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 }
                 else {
                     System.out.println("Wrong!");
-                    i = rnd.nextInt(wordStorage.size() - 1);
                 }
             }
 
@@ -177,7 +183,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
         while (!file.setFilePath(input)) {
             input = sc.nextLine();
         }
-        System.out.println("\nCommands:\n Write into file \n Show words \n Find by index \n Find by word \n Delete word");
+        System.out.println("\nCommands:\n Write into file \n Start training \n Show words \n Find by index \n Find by word \n Delete word");
         while (true) {
             System.out.println();
             input = sc.nextLine();
@@ -230,6 +236,9 @@ public class FileVocabulary implements Vocabulary, Trainable {
                         System.out.println("Not a number");
                     }
                 }
+            }
+            else if (input.equals("St")) {
+                file.training(file.getFilePath());
             }
             else {
                 System.out.println("No such command");

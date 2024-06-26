@@ -1,5 +1,5 @@
 package TrainEnglish;
 
 public interface Trainable {
-    void training();
+    void training(String filePath);
 }
