@@ -61,7 +61,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
             String line = fileReader.readLine();
             while (line != null) {
                 if (line.split(" - ")[0].equals(word) ||
-                        line.split(" - ")[1].equals(word)) {
+                        line.split(" - ")[1].equalsIgnoreCase(word)) {
                     fileReader.close();
                     return line;
                 } else {
@@ -85,8 +85,8 @@ public class FileVocabulary implements Vocabulary, Trainable {
             String line = null;
             while ((line = br.readLine()) != null) {
 
-                if (line.split(" - ")[0].equals(word)
-                        || line.split(" - ")[1].equals(word)) {
+                if (line.split(" - ")[0].equalsIgnoreCase(word)
+                        || line.split(" - ")[1].equalsIgnoreCase(word)) {
                     success = true;
                     continue;
                 } else {
@@ -148,18 +148,18 @@ public class FileVocabulary implements Vocabulary, Trainable {
             while (!wordStorage.isEmpty()) {
                 int i = -1;
                 try {
-                     i = rnd.nextInt(wordStorage.size()) - 1;
+                     i = rnd.nextInt(0, wordStorage.size());
                 }
                 catch (Exception exe) {
                     i = 0;
                 }
-                System.out.print(wordStorage.get(i).split(" - ")[0] + " - " );
+                System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                 String wordInput = scanner.nextLine();
-                if(wordInput.equals(wordStorage.get(i).split(" - ")[1])) {
+                if(wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
                     System.out.println("Correct!");
                     wordStorage.remove(i);
                 }
-                else if (wordInput.equals("End")) {
+                else if (wordInput.equalsIgnoreCase("End")) {
                     break;
                 }
                 else {
@@ -187,49 +187,49 @@ public class FileVocabulary implements Vocabulary, Trainable {
         while (true) {
             System.out.println();
             input = sc.nextLine();
-            if (input.equals("End")) {
+            if (input.equalsIgnoreCase("End")) {
                 sc.close();
                 break;
             }
-            if (input.equals("Wif")) {
+            if (input.equalsIgnoreCase("Wif")) {
                 String[] word = new String[2];
                 String wordInput = "";
                 System.out.println("Enter a word (Example Пример)");
                 while (true) {
                     try {
                         wordInput = sc.nextLine();
-                        if (wordInput.equals("Stop")) break;
+                        if (wordInput.equalsIgnoreCase("Stop")) break;
                         file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
                     } catch (Exception exe) {
                         System.out.println("Enter 2 words in line");
                     }
                 }
-            } else if (input.equals("Sw")) {
+            } else if (input.equalsIgnoreCase("Sw")) {
                 System.out.println();
                 file.showWords();
-            } else if (input.equals("Dw")) {
+            } else if (input.equalsIgnoreCase("Dw")) {
                 String garbage = "";
                 System.out.println("Word to delete: ");
-                while (!garbage.equals("Stop")) {
+                while (!garbage.equalsIgnoreCase("Stop")) {
                     garbage = sc.nextLine();
                     if (!file.deleteWord(garbage) && !garbage.equals("Stop")) {
                         System.out.println("No such word");
                     }
 
                 }
-            } else if (input.equals("Fbw")) {
+            } else if (input.equalsIgnoreCase("Fbw")) {
                 String search = "";
                 System.out.println("Word to find:");
                 while (true) {
                     search = sc.nextLine();
-                    if (search.equals("Stop")) break;
+                    if (search.equalsIgnoreCase("Stop")) break;
                     System.out.println(file.findWord(search));
                 }
-            } else if (input.equals("Fbi")) {
+            } else if (input.equalsIgnoreCase("Fbi")) {
                 String search = "";
                 while (true) {
                     search = sc.nextLine();
-                    if (search.toString().equals("Stop")) break;
+                    if (search.toString().equalsIgnoreCase("Stop")) break;
                     try {
                         System.out.println(file.findWordFromIndex(Integer.parseInt(search)));
                     } catch (NumberFormatException ex) {
@@ -237,7 +237,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     }
                 }
             }
-            else if (input.equals("St")) {
+            else if (input.equalsIgnoreCase("St")) {
                 file.training(file.getFilePath());
             }
             else {
