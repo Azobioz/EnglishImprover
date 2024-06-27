@@ -4,10 +4,7 @@ import TrainEnglish.Vocabulary;
 import TrainEnglish.Trainable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class FileVocabulary implements Vocabulary, Trainable {
 
@@ -159,7 +156,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     System.out.println("Correct!");
                     wordStorage.remove(i);
                 }
-                else if (wordInput.equalsIgnoreCase("End")) {
+                else if (wordInput.equalsIgnoreCase("Stop")) {
                     break;
                 }
                 else {
@@ -192,14 +189,22 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 break;
             }
             if (input.equalsIgnoreCase("Wif")) {
-                String[] word = new String[2];
                 String wordInput = "";
                 System.out.println("Enter a word (Example Пример)");
                 while (true) {
                     try {
                         wordInput = sc.nextLine();
                         if (wordInput.equalsIgnoreCase("Stop")) break;
-                        file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
+                        if (wordInput.split(" ").length > 2) {
+                            StringBuilder allTranslation = new StringBuilder();
+                            for (int i = 1; i < wordInput.split(" ").length; i++) {
+                                allTranslation.append(wordInput.split(" ")[i] + " ");
+                            }
+                            file.writeIntoStorage(wordInput.split(" ")[0], allTranslation.toString());
+                        }
+                        else {
+                            file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
+                        }
                     } catch (Exception exe) {
                         System.out.println("Enter 2 words in line");
                     }
