@@ -27,10 +27,8 @@ public class FileVocabulary implements Vocabulary, Trainable {
     public boolean writeIntoStorage(String word, String... translation) {
         try {
             BufferedWriter file = new BufferedWriter(new FileWriter(getFilePath(), true));
-            file.write(word + " - ");
-            for (String translations: translation) {
-                file.write(translations + " ");
-            }
+            String allTranslations = String.join(" ", translation);
+            file.write(word + " - "  + allTranslations);
             file.close();
             return true;
         } catch (IOException exe) {
@@ -154,8 +152,8 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 }
                 System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                 String wordInput = scanner.nextLine();
-                if (wordStorage.get(i).split(" ").length > 2) {
-                    for (int j = 1; !wordStorage.isEmpty(); j++) {
+                if (wordStorage.get(i).split(" ").length > 3) {
+                    for (int j = 2; !wordStorage.isEmpty(); j++) {
                         if (wordStorage.get(i).split(" ")[j].equals(wordInput)) {
                             System.out.println("Correct!");
                             wordStorage.remove(i);
