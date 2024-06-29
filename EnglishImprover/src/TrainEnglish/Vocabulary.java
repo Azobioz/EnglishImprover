@@ -5,6 +5,5 @@ public interface Vocabulary {
    String findWordFromIndex(int index);
    void showWords();
    boolean deleteWord(String word);
-   boolean writeIntoStorage(String en, String ru);
-   boolean writeIntoStorage(String multipleTranslation);
+   boolean writeIntoStorage(String en, String... ru);
 }

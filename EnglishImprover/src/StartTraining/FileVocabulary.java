@@ -24,27 +24,16 @@ public class FileVocabulary implements Vocabulary, Trainable {
         return filePath;
     }
 
-    public boolean writeIntoStorage(String en, String ru) {
+    public boolean writeIntoStorage(String word, String... translation) {
         try {
             BufferedWriter file = new BufferedWriter(new FileWriter(getFilePath(), true));
-            file.write(en + " - ");
-            file.write(ru + "\n");
+            file.write(word + " - ");
+            for (String translations: translation) {
+                file.write(translations + " ");
+            }
             file.close();
             return true;
         } catch (IOException exe) {
-            System.out.println("Error: " + exe.getMessage());
-        }
-        return false;
-    }
-
-    public boolean writeIntoStorage(String multipleTranslation) {
-        try {
-            BufferedWriter file = new BufferedWriter(new FileWriter(getFilePath(), true));
-            file.write(" " + multipleTranslation);
-            file.close();
-            return true;
-        }
-        catch (IOException exe) {
             System.out.println("Error: " + exe.getMessage());
         }
         return false;
@@ -165,7 +154,15 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 }
                 System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                 String wordInput = scanner.nextLine();
-                if(wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                if (wordStorage.get(i).split(" ").length > 2) {
+                    for (int j = 1; !wordStorage.isEmpty(); j++) {
+                        if (wordStorage.get(i).split(" ")[j].equals(wordInput)) {
+                            System.out.println("Correct!");
+                            wordStorage.remove(i);
+                        }
+                    }
+                }
+                else if(wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
                     System.out.println("Correct!");
                     wordStorage.remove(i);
                 }
@@ -219,7 +216,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                             file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
                         }
                     } catch (Exception exe) {
-                        System.out.println("Enter 2 words in line");
+                        System.out.println("Enter 2 or more words in line");
                     }
                 }
             } else if (input.equalsIgnoreCase("Sw")) {

@@ -6,8 +6,7 @@ public class Programm {
         //FileVocabulary.startWorkWithFile();
         FileVocabulary fv = new FileVocabulary();
         fv.setFilePath("C:\\Users\\PC\\OneDrive\\Рабочий стол\\Voc2.txt");
-        fv.writeIntoStorage("Apple", "Яблоко");
-        fv.writeIntoStorage("Яблочко");
-        fv.showWords();
+
+        fv.training(fv.getFilePath());
     }
 }
