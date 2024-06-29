@@ -37,6 +37,19 @@ public class FileVocabulary implements Vocabulary, Trainable {
         return false;
     }
 
+    public boolean writeIntoStorage(String multipleTranslation) {
+        try {
+            BufferedWriter file = new BufferedWriter(new FileWriter(getFilePath(), true));
+            file.write(" " + multipleTranslation);
+            file.close();
+            return true;
+        }
+        catch (IOException exe) {
+            System.out.println("Error: " + exe.getMessage());
+        }
+        return false;
+    }
+
     public void showWords() {
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(getFilePath()));
