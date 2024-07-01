@@ -34,6 +34,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
             BufferedWriter file = new BufferedWriter(new FileWriter(getFilePath(), true));
             String allTranslations = String.join(" ", translation);
             file.write(word + " - "  + allTranslations);
+            file.newLine();
             file.close();
             return true;
         } catch (IOException exe) {
@@ -173,7 +174,12 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     break;
                 }
                 else {
+                    if (wordStorage.get(i).split(" ").length > 3) {
+                        System.out.println("Wrong!");
+
+                    }
                     System.out.println("Wrong!");
+                    System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length()/2)));
                 }
             }
 
