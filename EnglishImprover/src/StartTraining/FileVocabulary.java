@@ -11,8 +11,13 @@ public class FileVocabulary implements Vocabulary, Trainable {
     private String filePath;
 
     public boolean setFilePath(String filePath) {
-        this.filePath = filePath;
-        File file = new File(filePath);
+        if (filePath.startsWith("\"") && filePath.endsWith("\"")) {
+           this.filePath =  filePath.substring(1, filePath.length() - 1);
+        }
+        else {
+            this.filePath = filePath;
+        }
+        File file = new File(this.filePath);
         if (!file.exists()) {
             System.out.println("File does not exist");
             return false;
