@@ -1,7 +1,7 @@
 package StartTraining;
 
-import TrainEnglish.Vocabulary;
-import TrainEnglish.Trainable;
+import TrainEnglish.*;
+
 
 import java.io.*;
 import java.util.*;
@@ -160,7 +160,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 String wordInput = scanner.nextLine();
                 if (wordStorage.get(i).split(" ").length > 3) {
                     boolean correctWord = false;
-                    for (int j = 2; j < wordStorage.get(i).length() && !wordInput.equalsIgnoreCase("stop"); j++) {
+                    for (int j = 2; j < wordStorage.get(i).split(" ").length && !wordInput.equalsIgnoreCase("stop"); j++) {
                         if (wordStorage.get(i).split(" ")[j].equalsIgnoreCase(wordInput)) {
                             System.out.println("Correct!");
                             wordStorage.remove(i);
