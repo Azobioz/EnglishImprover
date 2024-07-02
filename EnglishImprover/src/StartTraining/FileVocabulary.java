@@ -159,11 +159,18 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                 String wordInput = scanner.nextLine();
                 if (wordStorage.get(i).split(" ").length > 3) {
-                    for (int j = 2; !wordStorage.isEmpty(); j++) {
-                        if (wordStorage.get(i).split(" ")[j].equals(wordInput)) {
+                    boolean correctWord = false;
+                    for (int j = 2; j < wordStorage.get(i).length() && !wordInput.equalsIgnoreCase("stop"); j++) {
+                        if (wordStorage.get(i).split(" ")[j].equalsIgnoreCase(wordInput)) {
                             System.out.println("Correct!");
                             wordStorage.remove(i);
+                            correctWord = true;
+                            break;
                         }
+                    }
+                    if (!correctWord) {
+                        System.out.println("Wrong!");
+                        System.out.println("Clue: " + wordStorage.get(i).split(" ")[2].substring(0, wordStorage.get(i).split(" ")[2].length()/2));
                     }
                 }
                 else if(wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
@@ -174,12 +181,8 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     break;
                 }
                 else {
-                    if (wordStorage.get(i).split(" ").length > 3) {
-                        System.out.println("Wrong!");
-
-                    }
                     System.out.println("Wrong!");
-                    System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length()/2)));
+                    System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length() / 2)));
                 }
             }
 
