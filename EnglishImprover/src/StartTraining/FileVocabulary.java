@@ -192,8 +192,6 @@ public class FileVocabulary implements Vocabulary, Trainable {
         }
     }
 
-    //static void startTrain
-
    public static void startWorkWithFile() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter a file path");

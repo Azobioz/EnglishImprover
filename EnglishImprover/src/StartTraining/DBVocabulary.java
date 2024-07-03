@@ -22,4 +22,24 @@ public class DBVocabulary implements Vocabulary, Trainable {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
+
+    public boolean writeIntoStorage(String word, String... translation) {
+        String allTranslations = String.join(" ", translation);
+        String query = "call words_insert('" + word + "', '" + allTranslations + "');";
+        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
+        String username = "postgres";
+        String password = "12345";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+            boolean rs = statement.execute(query);
+            connection.close();
+            return true;
+        }
+        catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return false;
+    }
 }
