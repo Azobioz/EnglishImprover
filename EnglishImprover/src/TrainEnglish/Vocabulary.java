@@ -2,7 +2,7 @@ package TrainEnglish;
 
 public interface Vocabulary {
    String findWord(String word);
-   //String findWordFromIndex(int index);
+   String findWordFromIndex(int index);
    void showWords();
    boolean deleteWord(String word);
    boolean writeIntoStorage(String word, String... translation);

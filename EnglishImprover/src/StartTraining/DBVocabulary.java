@@ -14,7 +14,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
-                System.out.println(rs.getString("Words") + " - " + rs.getString("Translation_"));
+                System.out.println(rs.getString("ID_Words") + ". " + rs.getString("Words") + " - " + rs.getString("Translation_"));
             }
             connection.close();
         } catch (SQLException e) {
@@ -90,6 +90,30 @@ public class DBVocabulary implements Vocabulary, Trainable {
             System.out.println("Error: " + e.getMessage());
         }
         return "no such word";
+    }
+
+    public String findWordFromIndex(int index) {
+        String query = "select * from Words";
+        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
+        String username = "postgres";
+        String password = "12345";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                if (rs.getInt("ID_Words") == index) {
+                    String foundedWord = rs.getString("ID_Words") + ". " + rs.getString(("Words")) + " - " + rs.getString("Translation_");
+                    connection.close();
+                    return foundedWord;
+                }
+            }
+            connection.close();
+        }
+        catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return "Not such word from index " +  index;
     }
 
 }
