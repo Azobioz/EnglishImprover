@@ -25,6 +25,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
         return true;
     }
 
+
     public String getFilePath() {
         return filePath;
     }
