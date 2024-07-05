@@ -26,7 +26,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
     }
 
 
-    public String getFilePath() {
+    private String getFilePath() {
         return filePath;
     }
 
@@ -136,11 +136,11 @@ public class FileVocabulary implements Vocabulary, Trainable {
         return "Not such word from index " + index;
     }
 
-    public void training(String filePath) {
+    public void training() {
         try {
             Scanner scanner = new Scanner(System.in);
             Random rnd = new Random();
-            BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
+            BufferedReader fileReader = new BufferedReader(new FileReader(getFilePath()));
             List<String> wordStorage = new ArrayList<String>();
             String line = fileReader.readLine();
 
@@ -264,7 +264,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 }
             }
             else if (input.equalsIgnoreCase("St")) {
-                file.training(file.getFilePath());
+                file.training();
             }
             else {
                 System.out.println("No such command");

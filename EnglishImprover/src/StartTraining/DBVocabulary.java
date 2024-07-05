@@ -1,16 +1,49 @@
 package StartTraining;
 import TrainEnglish.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+
 public class DBVocabulary implements Vocabulary, Trainable {
+
+    private String url;
+    private String username;
+    private String password;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    private String getUrl() {
+        return url;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    private String getUsername() {
+        return username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String getPassword() {
+        return password;
+    }
 
     public void showWords() {
         String query = "select * from Words";
-        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
-        String username = "postgres";
-        String password = "12345";
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
@@ -26,11 +59,8 @@ public class DBVocabulary implements Vocabulary, Trainable {
     public boolean writeIntoStorage(String word, String... translation) {
         String allTranslations = String.join(" ", translation);
         String query = "call words_insert('" + word + "', '" + allTranslations + "');";
-        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
-        String username = "postgres";
-        String password = "12345";
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
             Statement statement = connection.createStatement();
             boolean rs = statement.execute(query);
             connection.close();
@@ -43,11 +73,8 @@ public class DBVocabulary implements Vocabulary, Trainable {
 
     public boolean deleteWord(String word) {
         String query = "select * from Words";
-        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
-        String username = "postgres";
-        String password = "12345";
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
@@ -69,11 +96,8 @@ public class DBVocabulary implements Vocabulary, Trainable {
 
     public String findWord(String word) {
         String query = "select * from Words";
-        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
-        String username = "postgres";
-        String password = "12345";
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
@@ -94,11 +118,8 @@ public class DBVocabulary implements Vocabulary, Trainable {
 
     public String findWordFromIndex(int index) {
         String query = "select * from Words";
-        String url = "jdbc:postgresql://localhost:15432/VocabularyDB";
-        String username = "postgres";
-        String password = "12345";
         try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
@@ -115,6 +136,147 @@ public class DBVocabulary implements Vocabulary, Trainable {
         }
         return "Not such word from index " +  index;
     }
+
+    public void training() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            Random rnd = new Random();
+            Connection connection = DriverManager.getConnection(getUrl(), getUsername(), getPassword());
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(getUrl());
+            List<String> wordStorage = new ArrayList<String>();
+            String line = rs.getString("Words") + " - " + rs.getString("Translation_");
+
+            while(rs.next()) {
+                wordStorage.add(line);
+                rs.next();
+                line = rs.getString("Words") + " - " + rs.getString("Translation_");
+            }
+
+            while (!wordStorage.isEmpty()) {
+                int i = -1;
+                try {
+                    i = rnd.nextInt(0, wordStorage.size());
+                }
+                catch (Exception exe) {
+                    i = 0;
+                }
+                System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
+                String wordInput = scanner.nextLine();
+                if (wordStorage.get(i).split(" ").length > 3) {
+                    boolean correctWord = false;
+                    for (int j = 2; j < wordStorage.get(i).split(" ").length && !wordInput.equalsIgnoreCase("stop"); j++) {
+                        if (wordStorage.get(i).split(" ")[j].equalsIgnoreCase(wordInput)) {
+                            System.out.println("Correct!");
+                            wordStorage.remove(i);
+                            correctWord = true;
+                            break;
+                        }
+                    }
+                    if (!correctWord) {
+                        System.out.println("Wrong!");
+                        System.out.println("Clue: " + wordStorage.get(i).split(" ")[2].substring(0, wordStorage.get(i).split(" ")[2].length()/2));
+                    }
+                }
+                else if(wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                    System.out.println("Correct!");
+                    wordStorage.remove(i);
+                }
+                else if (wordInput.equalsIgnoreCase("Stop")) {
+                    break;
+                }
+                else {
+                    System.out.println("Wrong!");
+                    System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length() / 2)));
+                }
+            }
+
+        }
+        catch (SQLException exe) {
+            System.out.println("Error: " + exe.getMessage());
+        }
+    }
+
+    public static void startWorkWithDB() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter a file path");
+        try {
+            DBVocabulary db = new DBVocabulary();
+
+            String input = sc.nextLine();
+            Connection connection = DriverManager.getConnection(db.getUrl(), db.getUsername(), db.getPassword());
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(db.getUrl());
+            System.out.println("\nCommands:\n Write into file \n Start training \n Show words \n Find by index \n Find by word \n Delete word");
+            while (true) {
+                System.out.println();
+                input = sc.nextLine();
+                if (input.equalsIgnoreCase("End")) {
+                    sc.close();
+                    break;
+                }
+                if (input.equalsIgnoreCase("Wif")) {
+                    String wordInput = "";
+                    System.out.println("Enter a word (Example Пример)");
+                    while (true) {
+                        try {
+                            wordInput = sc.nextLine();
+                            if (wordInput.equalsIgnoreCase("Stop")) break;
+                            if (wordInput.split(" ").length > 2) {
+                                StringBuilder allTranslation = new StringBuilder();
+                                for (int i = 1; i < wordInput.split(" ").length; i++) {
+                                    allTranslation.append(wordInput.split(" ")[i] + " ");
+                                }
+                                file.writeIntoStorage(wordInput.split(" ")[0], allTranslation.toString());
+                            } else {
+                                file.writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
+                            }
+                        } catch (Exception exe) {
+                            System.out.println("Enter 2 or more words in line");
+                        }
+                    }
+                } else if (input.equalsIgnoreCase("Sw")) {
+                    System.out.println();
+                    file.showWords();
+                } else if (input.equalsIgnoreCase("Dw")) {
+                    String garbage = "";
+                    System.out.println("Word to delete: ");
+                    while (!garbage.equalsIgnoreCase("Stop")) {
+                        garbage = sc.nextLine();
+                        if (!file.deleteWord(garbage) && !garbage.equals("Stop")) {
+                            System.out.println("No such word");
+                        }
+
+                    }
+                } else if (input.equalsIgnoreCase("Fbw")) {
+                    String search = "";
+                    System.out.println("Word to find:");
+                    while (true) {
+                        search = sc.nextLine();
+                        if (search.equalsIgnoreCase("Stop")) break;
+                        System.out.println(file.findWord(search));
+                    }
+                } else if (input.equalsIgnoreCase("Fbi")) {
+                    String search = "";
+                    while (true) {
+                        search = sc.nextLine();
+                        if (search.toString().equalsIgnoreCase("Stop")) break;
+                        try {
+                            System.out.println(file.findWordFromIndex(Integer.parseInt(search)));
+                        } catch (NumberFormatException ex) {
+                            System.out.println("Not a number");
+                        }
+                    }
+                } else if (input.equalsIgnoreCase("St")) {
+                    file.training();
+                } else {
+                    System.out.println("No such command");
+                }
+            }
+        }
+        catch (SQLException exe) {
+            System.out.println("Error: " + exe.getMessage());
+        }
 
 }
 
