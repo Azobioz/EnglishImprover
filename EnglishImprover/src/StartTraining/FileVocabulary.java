@@ -8,16 +8,15 @@ import java.util.*;
 
 public class FileVocabulary implements Vocabulary, Trainable {
 
-    private String filePath;
-
+    private static String filePath;
     public boolean setFilePath(String filePath) {
         if (filePath.startsWith("\"") && filePath.endsWith("\"")) {
-           this.filePath =  filePath.substring(1, filePath.length() - 1);
+           FileVocabulary.filePath =  filePath.substring(1, filePath.length() - 1);
         }
         else {
-            this.filePath = filePath;
+            FileVocabulary.filePath = filePath;
         }
-        File file = new File(this.filePath);
+        File file = new File(FileVocabulary.filePath);
         if (!file.exists()) {
             System.out.println("File does not exist");
             return false;
@@ -170,7 +169,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 if (!order) {
                     System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                     wordInput = scanner.nextLine();
-                    if (wordStorage.get(i).split(",").length > 1 && !wordInput.equalsIgnoreCase("Stop")) {
+                    if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
                         boolean correctWord = false;
                         for (int j = 1; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
                             if (removeSymbols(wordStorage.get(i))[j].equalsIgnoreCase(wordInput)) {
@@ -182,10 +181,15 @@ public class FileVocabulary implements Vocabulary, Trainable {
                         }
                         if (!correctWord) {
                             System.out.println("Wrong!");
-                            System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[2].substring(0, removeSymbols(wordStorage.get(i))[2].length() / 2));
+                            if (wordStorage.get(i).split(",").length > 2) {
+                                System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                            }
+                            else {
+                                System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                            }
                         }
                     }
-                    else if (wordInput.equalsIgnoreCase(removeSymbols(wordStorage.get(i))[1])) {
+                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
                         System.out.println("Correct!");
                         wordStorage.remove(i);
                     }
@@ -194,15 +198,21 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     }
                     else {
                         System.out.println("Wrong!");
-                        System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                        if (wordStorage.get(i).split(",").length > 2) {
+                            System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                        }
+                        else {
+                            System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                        }
                     }
                 }
                 else if (order) {
                     System.out.print(wordStorage.get(i).split(" - ")[1] + " - ");
-                    if (wordStorage.get(i).split(" ").length > 3) {
+                    wordInput = scanner.nextLine();
+                    if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
                         boolean correctWord = false;
-                        for (int j = 2; j < wordStorage.get(i).split(" ").length && !wordInput.equalsIgnoreCase("stop"); j++) {
-                            if (wordStorage.get(i).split(" ")[j].equalsIgnoreCase(wordInput)) {
+                        for (int j = 2; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
+                            if (wordStorage.get(i).split(" - ")[0].equalsIgnoreCase(wordInput)) {
                                 System.out.println("Correct!");
                                 wordStorage.remove(i);
                                 correctWord = true;
@@ -211,20 +221,20 @@ public class FileVocabulary implements Vocabulary, Trainable {
                         }
                         if (!correctWord) {
                             System.out.println("Wrong!");
-                            System.out.println("Clue: " + wordStorage.get(i).split(" ")[2].substring(0, wordStorage.get(i).split(" ")[2].length() / 2));
+                            System.out.println("Clue: " + wordStorage.get(i).split(" - ")[0].substring(0, wordStorage.get(i).split(" - ")[0].length() / 2));
                         }
                     }
-                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[0])) {
                         System.out.println("Correct!");
                         wordStorage.remove(i);
+                    }
+                    else if (wordInput.equalsIgnoreCase("Stop")) {
+                        break;
                     }
                     else {
                         System.out.println("Wrong!");
                         System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length() / 2)));
                     }
-                }
-                else if (wordInput.equalsIgnoreCase("Stop")) {
-                    break;
                 }
             }
 
@@ -236,14 +246,19 @@ public class FileVocabulary implements Vocabulary, Trainable {
 
    public static void startWorkWithFile() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter a file path");
-        String input = sc.nextLine();
         FileVocabulary file = new FileVocabulary();
-        while (!file.setFilePath(input)) {
+        String input = "";
+        if (file.getFilePath() == null) {
+
+            System.out.println("Enter a file path");
             input = sc.nextLine();
+
+            while (!file.setFilePath(input)) {
+                input = sc.nextLine();
+            }
         }
-        System.out.println("\nCommands:\n Write into file \n Start training \n Show words \n Find by index \n Find by word \n Delete word");
-        while (true) {
+       System.out.println("\nCommands:\n Write into file \n Start training \n Show words \n Find by index \n Find by word \n Delete word");
+       while (true) {
             System.out.println();
             input = sc.nextLine();
             if (input.equalsIgnoreCase("End")) {

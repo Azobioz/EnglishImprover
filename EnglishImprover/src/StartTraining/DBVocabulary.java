@@ -40,6 +40,10 @@ public class DBVocabulary implements Vocabulary, Trainable {
         return password;
     }
 
+    private String[] removeSymbols(String line) {
+        return line.replaceAll(",", "").replaceAll(" - ", " ").split(" ");
+    }
+
     public void showWords() {
         String query = "select * from Words";
         try {
@@ -134,7 +138,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
         return "Not such word from index " + index;
     }
 
-    public void training() {
+    public void training(boolean order) {
         try {
             String query = "select * from Words";
             Scanner scanner = new Scanner(System.in);
@@ -156,36 +160,75 @@ public class DBVocabulary implements Vocabulary, Trainable {
                 } catch (Exception exe) {
                     i = 0;
                 }
-                System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
-                String wordInput = scanner.nextLine();
-                if (wordStorage.get(i).split(" ").length > 3) {
-                    boolean correctWord = false;
-                    for (int j = 2; j < wordStorage.get(i).split(" ").length && !wordInput.equalsIgnoreCase("stop"); j++) {
-                        if (wordStorage.get(i).split(" ")[j].equalsIgnoreCase(wordInput)) {
-                            System.out.println("Correct!");
-                            wordStorage.remove(i);
-                            correctWord = true;
-                            break;
+                if (!order) {
+                    System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
+                    String wordInput = scanner.nextLine();
+                    if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
+                        boolean correctWord = false;
+                        for (int j = 1; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
+                            if (removeSymbols(wordStorage.get(i))[j].equalsIgnoreCase(wordInput)) {
+                                System.out.println("Correct!");
+                                wordStorage.remove(i);
+                                correctWord = true;
+                                break;
+                            }
+                        }
+                        if (!correctWord) {
+                            System.out.println("Wrong!");
+                            if (wordStorage.get(i).split(",").length > 2) {
+                                System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                            }
+                            else {
+                                System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                            }
                         }
                     }
-                    if (!correctWord) {
+                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                        System.out.println("Correct!");
+                        wordStorage.remove(i);
+                    }
+                    else if (wordInput.equalsIgnoreCase("Stop")) {
+                        break;
+                    }
+                    else {
                         System.out.println("Wrong!");
-                        System.out.println("Clue: " + wordStorage.get(i).split(" ")[2].substring(0, wordStorage.get(i).split(" ")[2].length() / 2));
+                        if (wordStorage.get(i).split(",").length > 2) {
+                            System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                        }
+                        else {
+                            System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                        }
                     }
                 }
-                else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
-                    System.out.println("Correct!");
-                    wordStorage.remove(i);
-                }
-                else if (wordInput.equalsIgnoreCase("Stop")) {
-                    break;
-                }
-                else {
-                    System.out.println("Wrong!");
-                    System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length() / 2)));
-                }
-                if (wordStorage.isEmpty()) {
-                    System.out.println();
+                else if (order) {
+                    System.out.print(wordStorage.get(i).split(" - ")[1] + " - ");
+                    String wordInput = scanner.nextLine();
+                    if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
+                        boolean correctWord = false;
+                        for (int j = 2; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
+                            if (wordStorage.get(i).split(" - ")[0].equalsIgnoreCase(wordInput)) {
+                                System.out.println("Correct!");
+                                wordStorage.remove(i);
+                                correctWord = true;
+                                break;
+                            }
+                        }
+                        if (!correctWord) {
+                            System.out.println("Wrong!");
+                            System.out.println("Clue: " + wordStorage.get(i).split(" - ")[0].substring(0, wordStorage.get(i).split(" - ")[0].length() / 2));
+                        }
+                    }
+                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[0])) {
+                        System.out.println("Correct!");
+                        wordStorage.remove(i);
+                    }
+                    else if (wordInput.equalsIgnoreCase("Stop")) {
+                        break;
+                    }
+                    else {
+                        System.out.println("Wrong!");
+                        System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, (wordStorage.get(i).split(" - ")[1].length() / 2)));
+                    }
                 }
             }
 
@@ -280,7 +323,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     }
                 }
                 else if (input.equalsIgnoreCase("St")) {
-                    training();
+                    training(true);
                 }
                 else {
                     System.out.println("No such command");
