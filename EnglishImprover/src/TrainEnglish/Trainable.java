@@ -1,5 +1,5 @@
 package TrainEnglish;
 
 public interface Trainable {
-    //void training(boolean order);
+    void training(boolean order);
 }

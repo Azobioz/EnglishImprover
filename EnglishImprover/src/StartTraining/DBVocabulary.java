@@ -157,16 +157,18 @@ public class DBVocabulary implements Vocabulary, Trainable {
                 int i = -1;
                 try {
                     i = rnd.nextInt(0, wordStorage.size());
-                } catch (Exception exe) {
+                }
+                catch (Exception exe) {
                     i = 0;
                 }
+                String wordInput = "";
                 if (!order) {
                     System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
-                    String wordInput = scanner.nextLine();
-                    if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
+                    wordInput = scanner.nextLine();
+                    if (wordStorage.get(i).split(" - ")[1].split(" ").length > 1 && !wordInput.equalsIgnoreCase("Stop")) {
                         boolean correctWord = false;
-                        for (int j = 1; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
-                            if (removeSymbols(wordStorage.get(i))[j].equalsIgnoreCase(wordInput)) {
+                        for (int j = 0; j < wordStorage.get(i).split(" - ")[1].split(" ").length && !wordInput.equalsIgnoreCase("Stop"); j++) {
+                            if (wordStorage.get(i).split(" - ")[1].split(" ")[j].equalsIgnoreCase(wordInput)) {
                                 System.out.println("Correct!");
                                 wordStorage.remove(i);
                                 correctWord = true;
@@ -175,8 +177,8 @@ public class DBVocabulary implements Vocabulary, Trainable {
                         }
                         if (!correctWord) {
                             System.out.println("Wrong!");
-                            if (wordStorage.get(i).split(",").length > 2) {
-                                System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
+                            if (wordStorage.get(i).split(" - ")[1].split(" ").length > 2) {
+                                System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].split(" ")[0].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
                             }
                             else {
                                 System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
@@ -192,7 +194,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     }
                     else {
                         System.out.println("Wrong!");
-                        if (wordStorage.get(i).split(",").length > 2) {
+                        if (wordStorage.get(i).split(" - ")[1].split(" ").length > 2) {
                             System.out.println("Clue: " + removeSymbols(wordStorage.get(i))[1].substring(0, removeSymbols(wordStorage.get(i))[1].length() / 2));
                         }
                         else {
@@ -202,7 +204,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                 }
                 else if (order) {
                     System.out.print(wordStorage.get(i).split(" - ")[1] + " - ");
-                    String wordInput = scanner.nextLine();
+                    wordInput = scanner.nextLine();
                     if (wordStorage.get(i).split(",").length > 2 && !wordInput.equalsIgnoreCase("Stop")) {
                         boolean correctWord = false;
                         for (int j = 2; j < removeSymbols(wordStorage.get(i)).length && !wordInput.equalsIgnoreCase("Stop"); j++) {
@@ -237,7 +239,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
         }
     }
 
-    public void startWorkWithLocalDB() {
+    public  void startWorkWithLocalDB() {
         Scanner sc = new Scanner(System.in);
         try {
             String query = "select * from Words";
@@ -247,14 +249,13 @@ public class DBVocabulary implements Vocabulary, Trainable {
             System.out.println("\nCommands:\n Write into db \n Start training \n Show words \n Find by index \n Find by word \n Delete word\n");
             while (true) {
                 String input = sc.nextLine();
-                System.out.println();
                 if (input.equalsIgnoreCase("End")) {
                     sc.close();
                     break;
                 }
                 if (input.equalsIgnoreCase("Widb")) {
                     String wordInput = "";
-                    System.out.println("Enter a word (Example Пример)");
+                    System.out.println("Enter a word (Word - Translation1 Translation2)");
                     while (true) {
                         try {
                             wordInput = sc.nextLine();
@@ -262,15 +263,15 @@ public class DBVocabulary implements Vocabulary, Trainable {
                                 System.out.println();
                                 break;
                             }
-                            if (wordInput.split(" ").length > 2) {
+                            if (wordInput.split(" - ")[1].split(" ").length > 1) {
                                 StringBuilder allTranslation = new StringBuilder();
-                                for (int i = 1; i < wordInput.split(" ").length; i++) {
-                                    allTranslation.append(wordInput.split(" ")[i] + " ");
+                                for (int i = 0; i < wordInput.split(" - ")[1].split(" ").length; i++) {
+                                    allTranslation.append(wordInput.split(" - ")[1].split(" ")[i] + " ");
                                 }
-                                writeIntoStorage(wordInput.split(" ")[0], allTranslation.toString());
+                                writeIntoStorage(wordInput.split(" - ")[0], allTranslation.toString());
                             }
                             else {
-                                writeIntoStorage(wordInput.split(" ")[0], wordInput.split(" ")[1]);
+                                writeIntoStorage(wordInput.split(" - ")[0], wordInput.split(" - ")[1]);
                             }
                         } catch (Exception exe) {
                             System.out.println("Enter 2 or more words in line");
@@ -286,7 +287,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     System.out.println("Word to delete: ");
                     while (!garbage.equalsIgnoreCase("Stop")) {
                         garbage = sc.nextLine();
-                        if (!deleteWord(garbage) && !garbage.equals("Stop")) {
+                        if (!deleteWord(garbage) && !garbage.equalsIgnoreCase("Stop")) {
                             System.out.println("No such word");
                         }
 
@@ -323,7 +324,26 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     }
                 }
                 else if (input.equalsIgnoreCase("St")) {
-                    training(true);
+                    System.out.println("Word - Translation / Translation - Word (wt/tw)");
+                    do {
+                        input = sc.nextLine();
+                        if (input.equalsIgnoreCase("wt")) {
+                            training(false);
+                            input = "";
+                        }
+                        else if (input.equalsIgnoreCase("tw")) {
+                            training(true);
+                            input = "";
+                        }
+                        else if (input.equalsIgnoreCase("Stop")) {
+                            break;
+                        }
+                        else {
+                            System.out.println("Enter wt or tw");
+                        }
+                    } while (input.equalsIgnoreCase("wt") && !input.equalsIgnoreCase("tw")
+                            || !input.equalsIgnoreCase("wt") && input.equalsIgnoreCase("tw"));
+                    System.out.println();
                 }
                 else {
                     System.out.println("No such command");
