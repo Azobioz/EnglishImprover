@@ -319,7 +319,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     if (garbage.equalsIgnoreCase("Stop")) {
                         break;
                     }
-                    else if (!file.deleteWord(garbage) && !garbage.equalsIgnoreCase("Stop")) {
+                    else if (file.deleteWord(garbage) && !garbage.equalsIgnoreCase("Stop")) {
                         System.out.println("No such word");
                     }
                 }
