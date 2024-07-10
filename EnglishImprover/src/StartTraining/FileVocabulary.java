@@ -42,7 +42,12 @@ public class FileVocabulary implements Vocabulary, Trainable {
     }
 
     private static String[] getWordAndTranslation(String line) {
-        return (line.split(" - ")[0]  + line.split(" - ")[1]).split(" ");
+        String word = line.split(" - ")[0];
+        String[] translation = line.split(" - ")[1].split(" ");
+        String[] wordAndTranslation = new String[translation.length + 1];
+        wordAndTranslation[0] = word;
+        System.arraycopy(translation, 0, wordAndTranslation, 1, translation.length);
+        return wordAndTranslation;
     }
 
     public boolean writeIntoStorage(String word, String... translation) {
@@ -103,20 +108,22 @@ public class FileVocabulary implements Vocabulary, Trainable {
             BufferedReader br = new BufferedReader(new FileReader(getFilePath()));
 
             String line = null;
-            while ((line = br.readLine()) != null) {
-                for (int j = 0;  j < getConditionLength(line); j++) {
-                    if (getWordAndTranslation(line)[j].equalsIgnoreCase(word)) {
-                        success = true;
-                        continue;
+                while ((line = br.readLine()) != null) {
+                     success = false;
+                    for (int j = 0;  j < getConditionLength(line); j++) {
+                        if (getWordAndTranslation(line)[j].equalsIgnoreCase(word)) {
+                            success = true;
+                            break;
+                        }
                     }
+                    if (!success) {
+                        pw.println(line);
+                        pw.flush();
+                    }
+
                 }
-                if (!success) {
-                    pw.println(line);
-                    pw.flush();
-                }
-            }
-            pw.close();
-            br.close();
+                pw.close();
+                br.close();
             if (!filePath.delete()) {
                 System.out.println("Could not delete file");
             }
@@ -283,7 +290,6 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     try {
                         wordInput = sc.nextLine();
                         if (wordInput.equalsIgnoreCase("Stop")){
-                            System.out.println();
                             break;
                         }
                         if (getTranslationWords(wordInput).length > 1) {
