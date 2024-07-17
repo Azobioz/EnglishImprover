@@ -103,6 +103,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
         File filePath = new File(getFilePath());
         File tempFile = new File(filePath.getAbsolutePath() + ".tmp");
         boolean success = false;
+        boolean deletedWord = false;
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
             BufferedReader br = new BufferedReader(new FileReader(getFilePath()));
@@ -113,6 +114,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     for (int j = 0;  j < getConditionLength(line); j++) {
                         if (getWordAndTranslation(line)[j].equalsIgnoreCase(word)) {
                             success = true;
+                            deletedWord = true;
                             break;
                         }
                     }
@@ -137,7 +139,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
         catch (IOException exe) {
             System.out.println("Error: " + exe.getMessage());
         }
-        return success;
+        return deletedWord;
     }
 
 
@@ -175,6 +177,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                 wordStorage.add(line);
                 line = fileReader.readLine();
             }
+            fileReader.close();
 
             while (!wordStorage.isEmpty()) {
                 int i = -1;
@@ -201,14 +204,14 @@ public class FileVocabulary implements Vocabulary, Trainable {
                         if (!correctWord) {
                             System.out.println("Wrong!");
                             if (wordStorage.get(i).split(" - ")[1].split(" ").length > 2) {
-                                System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
+                                System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
                             }
                             else {
                                 System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
                             }
                         }
                     }
-                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                    else if (wordInput.equalsIgnoreCase(getTranslationWords(wordStorage.get(i))[0])) {
                         System.out.println("Correct!");
                         wordStorage.remove(i);
                     }
@@ -218,10 +221,10 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     else {
                         System.out.println("Wrong!");
                         if (getTranslationWords(wordStorage.get(i)).length > 1) {
-                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
+                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
                         }
                         else {
-                            System.out.println("Clue: " + getOnlyWord(wordStorage.get(i)).substring(0, getOnlyWord(wordStorage.get(i)).length() / 2));
+                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
                         }
                     }
                 }
@@ -252,7 +255,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     }
                     else {
                         System.out.println("Wrong!");
-                        System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
+                        System.out.println("Clue: " + getOnlyWord(wordStorage.get(i)).substring(0, getOnlyWord(wordStorage.get(i)).length() / 2));
                     }
                 }
             }
@@ -319,7 +322,7 @@ public class FileVocabulary implements Vocabulary, Trainable {
                     if (garbage.equalsIgnoreCase("Stop")) {
                         break;
                     }
-                    else if (file.deleteWord(garbage) && !garbage.equalsIgnoreCase("Stop")) {
+                    else if (!file.deleteWord(garbage) && !garbage.equalsIgnoreCase("Stop")) {
                         System.out.println("No such word");
                     }
                 }

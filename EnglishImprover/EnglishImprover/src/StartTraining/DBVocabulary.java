@@ -181,7 +181,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                 }
                 String wordInput = "";
                 if (!order) {
-                    System.out.print(getOnlyWord(wordStorage.get(i)) + " - ");
+                    System.out.print(wordStorage.get(i).split(" - ")[0] + " - ");
                     wordInput = scanner.nextLine();
                     if (getTranslationWords(wordStorage.get(i)).length > 1 && !wordInput.equalsIgnoreCase("Stop")) {
                         boolean correctWord = false;
@@ -195,15 +195,15 @@ public class DBVocabulary implements Vocabulary, Trainable {
                         }
                         if (!correctWord) {
                             System.out.println("Wrong!");
-                            if (getTranslationWords(wordStorage.get(i)).length > 1) {
-                                System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
+                            if (wordStorage.get(i).split(" - ")[1].split(" ").length > 2) {
+                                System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
                             }
                             else {
-                                System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                                System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
                             }
                         }
                     }
-                    else if (wordInput.equalsIgnoreCase(wordStorage.get(i).split(" - ")[1])) {
+                    else if (wordInput.equalsIgnoreCase(getTranslationWords(wordStorage.get(i))[0])) {
                         System.out.println("Correct!");
                         wordStorage.remove(i);
                     }
@@ -213,10 +213,10 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     else {
                         System.out.println("Wrong!");
                         if (getTranslationWords(wordStorage.get(i)).length > 1) {
-                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[1].substring(0, getTranslationWords(wordStorage.get(i))[1].length() / 2));
+                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
                         }
                         else {
-                            System.out.println("Clue: " + wordStorage.get(i).split(" - ")[1].substring(0, wordStorage.get(i).split(" - ")[1].length() / 2));
+                            System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
                         }
                     }
                 }
@@ -247,7 +247,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     }
                     else {
                         System.out.println("Wrong!");
-                        System.out.println("Clue: " + getTranslationWords(wordStorage.get(i))[0].substring(0, getTranslationWords(wordStorage.get(i))[0].length() / 2));
+                        System.out.println("Clue: " + getOnlyWord(wordStorage.get(i)).substring(0, getOnlyWord(wordStorage.get(i)).length() / 2));
                     }
                 }
             }
@@ -299,6 +299,7 @@ public class DBVocabulary implements Vocabulary, Trainable {
                     }
                 }
                 else if (input.equalsIgnoreCase("Sw")) {
+                    System.out.println();
                     showWords();
                     System.out.println();
                 }
@@ -350,12 +351,15 @@ public class DBVocabulary implements Vocabulary, Trainable {
                         if (input.equalsIgnoreCase("wt")) {
                             training(false);
                             input = "";
+                            System.out.println();
                         }
                         else if (input.equalsIgnoreCase("tw")) {
                             training(true);
                             input = "";
+                            System.out.println();
                         }
                         else if (input.equalsIgnoreCase("Stop")) {
+                            System.out.println();
                             break;
                         }
                         else {
