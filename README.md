@@ -33,12 +33,11 @@ Following is working for both file and local data base
 
   # Using local data base
   
- 1. Open any data base program
-  2. Create table called Words with 2 attributes called Words and Translation_
-  3. Create 2 procedure: Words_Insert and Words_Delete
-  4. Write codes in method main of Program class
-  5. Create an object of DBVocabulary class
-  6. Call 3 methods
+ 1. Open Postgresql 
+  2. Copy code from Create Words.sql file to create table and Procedure Words.sql to create procedures: insert and delete
+  3. Write codes in method main of Program class
+  4. Create an object of DBVocabulary class
+  5. Call 3 methods
 
      ![image](https://github.com/user-attachments/assets/ef62daed-6d37-4006-88e0-f4d5966d4786)
 
